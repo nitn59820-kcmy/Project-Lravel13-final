@@ -47,13 +47,12 @@ class StudentController extends Controller
         }
 
         // Pagination
-        $students = $query->paginate(10);
+        $students = $query
+            ->paginate(10)
+            ->withQueryString();
 
-        // Keep search/filter when changing page
-        $students->withQueryString();
-
-        // Get Departments
-        $departments = Department::all();
+        // Get ALL Departments
+        $departments = Department::orderBy('dept_id', 'asc')->get();
 
         return view(
             'student.liststudent',
@@ -64,7 +63,7 @@ class StudentController extends Controller
     // Show Add Student Form
     public function create()
     {
-        $departments = Department::all();
+        $departments = Department::orderBy('dept_id', 'asc')->get();
 
         return view(
             'student.home',
@@ -77,15 +76,10 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'student_name' => 'required|string|max:255',
-
             'email' => 'required|email|unique:students,email',
-
             'gender' => 'required|in:Male,Female',
-
             'enrollment_date' => 'required|date',
-
             'department_id' => 'required|exists:departments,dept_id',
-
             'description' => 'nullable|string',
         ]);
 
@@ -99,7 +93,7 @@ class StudentController extends Controller
     // Edit Student
     public function edit(Student $student)
     {
-        $departments = Department::all();
+        $departments = Department::orderBy('dept_id', 'asc')->get();
 
         return view(
             'student.home',
